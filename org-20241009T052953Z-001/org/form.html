@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Creation</title>
+  <link rel="stylesheet" href="form.css">
+  <script>
+     let isEditing = false; // Track whether in editing mode
+
+function showPopup(message) {
+  const popup = document.getElementById('profile-popup');
+  popup.textContent = message; // Set custom message
+  popup.style.display = 'block';
+  setTimeout(() => { popup.style.display = 'none'; }, 3000);
+}
+
+function handleSubmit(event) {
+  event.preventDefault(); // Prevent default form submission
+  
+  const formElements = document.querySelectorAll('form input, form textarea, form select');
+  
+  if (isEditing) {
+    // Save the edited profile
+    showPopup("Profile changes saved!");
+    
+    // Disable editing after saving changes
+    formElements.forEach(el => el.disabled = true);
+    isEditing = false;
+  } else {
+    // Save the new profile
+    showPopup("Profile successfully created!");
+    
+    // Enable editing mode for future changes
+    isEditing = true;
+  }
+
+  // Switch button text based on the mode
+  const submitBtn = document.querySelector('.submit-btn');
+  submitBtn.textContent = isEditing ? "Save Changes" : "Edit Profile";
+}
+
+// Enable editing of form fields
+function enableEditing() {
+  const formElements = document.querySelectorAll('form input, form textarea, form select');
+  formElements.forEach(el => el.disabled = false);
+}
+
+// Trigger form editing
+function startEditing() {
+  enableEditing();
+  const submitBtn = document.querySelector('.submit-btn');
+  submitBtn.textContent = "Save Changes";
+  isEditing = true; // Switch to editing mode
+}
+
+// Image upload preview
+function previewImage(event) {
+  const input = event.target;
+  const reader = new FileReader();
+  reader.onload = function() {
+    const profileCircle = document.getElementById('profile-circle');
+    profileCircle.style.backgroundImage = `url(${reader.result})`;
+    profileCircle.style.backgroundSize = 'cover';
+    document.getElementById("initials").style.display = 'none'; // Hide initials on image upload
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// Gender change handling with cartoon avatars
+function handleGenderChange(event) {
+  const gender = event.target.value;
+  const profileImage = document.getElementById('profile-preview');
+
+  if (gender === 'male') {
+    profileImage.src = 'male-cartoon.png';
+  } else if (gender === 'female') {
+    profileImage.src = 'female-cartoon.png';
+  } else {
+    profileImage.src = 'default-profile.png';  // Default for "Other"
+  }
+  profileImage.style.display = 'block';
+}
+
+// Show initial from first name
+document.getElementById("first-name").addEventListener("input", function() {
+  const firstName = this.value;
+  const initial = firstName.charAt(0).toUpperCase(); // Get first letter
+  document.getElementById("initials").textContent = initial;
+});
+
+// Initial form submit listener
+document.querySelector('form').addEventListener('submit', handleSubmit);
+
+  </script>
+</head>
+<body>
+
+  
+  
+
+  <!-- Full-page form -->
+  <div class="full-page-form">
+    <h2>Create Your Profile</h2>
+    <div class="form-group profile-image-container">
+      <div class="profile-circle" id="profile-circle">
+        <span id="initials">A</span> <!-- Placeholder for the first letter -->
+        <input type="file" id="profile-image" name="profile-image" accept="image/*" onchange="previewImage(event)">
+      </div>
+    </div>
+    
+    
+    <form onsubmit="handleSubmit(event)">
+      <!-- Personal Details Section -->
+      <div class="form-group">
+        <label for="first-name">First Name:</label>
+        <input type="text" id="first-name" name="first-name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="last-name">Last Name:</label>
+        <input type="text" id="last-name" name="last-name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required>
+      </div>
+
+      <div class="form-group">
+        <label>Gender:</label>
+        <div class="gender-options">
+          <label>
+            <input type="radio" name="gender" value="male" required onchange="handleGenderChange(event)">
+            Male
+          </label>
+          <label>
+            <input type="radio" name="gender" value="female" required onchange="handleGenderChange(event)">
+            Female
+          </label>
+          <label>
+            <input type="radio" name="gender" value="other" required onchange="handleGenderChange(event)">
+            Other
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email ID:</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" required>
+      </div>
+
+      <div class="form-group">
+        <label for="skills">Skills:</label>
+        <input type="text" id="skills" name="skills" placeholder="e.g. JavaScript, React" required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Short Description About Yourself:</label>
+        <textarea id="description" name="description" rows="3" placeholder="Briefly describe yourself" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="education">Educational Qualifications:</label>
+        <select id="education" name="education" required>
+          <option value="">Select</option>
+          <option value="sslc">SSLC</option>
+          <option value="hsc">HSC</option>
+          <option value="undergraduate">Undergraduate</option>
+          <option value="postgraduate">Postgraduate</option>
+          <option value="employee">Employee</option>
+        </select>
+      </div>
+
+      <button type="submit" class="submit-btn">Save Profile</button>
+    </form>
+  </div>
+
+  <!-- Popup for profile completion -->
+  <div id="profile-popup" class="popup">
+    <p>Profile successfully created!</p>
+  </div>
+
+</body>
+</html>
